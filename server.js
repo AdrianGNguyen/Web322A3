@@ -19,6 +19,8 @@ const path = require("path");
 const app = express();
 const port = 3000;
 
+app.set('view engine', 'ejs');
+
 // Ensure the sets array is built before starting the server
 legoData.Initialize()
   .then(() => {
@@ -32,15 +34,15 @@ legoData.Initialize()
 
 // Middleware to serve static files
 //app.use(express.static(path.join(__dirname, "views")));
-app.use(express.static(path.join(__dirname, "src")));
+app.use(express.static(path.join(__dirname, "public")));
 
 // Routes
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "home.html"));
+  res.render("home", { page: '/' });
 });
 
 app.get("/about", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "about.html"));
+  res.render("about", { page: '/about' });
 });
 
 app.get("/lego/sets", (req, res) => {
@@ -48,7 +50,8 @@ app.get("/lego/sets", (req, res) => {
   if (theme) {
     legoData.getSetsByTheme(theme)
       .then(foundSets => {
-        res.json(foundSets);
+        // Render the "sets.ejs" view with the Lego sets data
+        res.render("sets", { sets: foundSets, page: '/lego/sets' });
       })
       .catch(error => {
         res.status(404).send(error);
@@ -56,7 +59,8 @@ app.get("/lego/sets", (req, res) => {
   } else {
     legoData.getAllSets()
       .then(allSets => {
-        res.json(allSets);
+        // Render the "sets.ejs" view with all Lego sets data
+        res.render("sets", { sets: allSets, page: '/lego/sets' });
       })
       .catch(error => {
         res.status(500).send(error);
@@ -64,39 +68,20 @@ app.get("/lego/sets", (req, res) => {
   }
 });
 
-app.get("/lego/sets/:setNum", (req, res) => {
-  const setNum = req.params.setNum;
-  legoData.getSetByNum(setNum)
-    .then(foundSet => {
-      if (foundSet) {
-        res.json(foundSet);
-      } else {
-        res.status(404).send("Lego set not found");
-      }
-    })
-    .catch(error => {
-      res.status(404).send(error);
-    });
-});
-
-app.get("/lego/sets", (req, res) => {
-  const theme = req.query.theme;
-  if (theme) {
-    legoData.getSetsByTheme(theme)
-      .then(foundSets => {
-        res.json(foundSets);
-      })
-      .catch(error => {
-        res.status(404).send(error);
-      });
-  } else {
-    // Handle case when no theme is provided
-    res.status(400).send("Theme parameter is missing");
+app.get("/lego/sets/:setNum", async (req, res) => {
+  try {
+    const set = await legoData.getSetByNum(req.params.setNum);
+    if (set) {
+      res.render("set", { set: set, page: '' });
+    } else {
+      res.status(404).render("404", { message: "Set not found" });
+    }
+  } catch (error) {
+    res.status(404).render("404", { message: error });
   }
 });
 
-
 // Route for handling 404 errors
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+  res.status(404).render("404", { message: "I'm sorry, we're unable to find what you're looking for" });
 });
