@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lego Sets Collection</title>
+    <link href="/css/output.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Include the navbar partial -->
+    <%- include('partials/navbar', { page: '/lego/sets' }) %>
+
+    <div class="container mx-auto">
+        <!-- Hero section -->
+        <div class="hero bg-primary-500 text-black p-6 rounded-lg mb-6 text-center">
+            <h1 class="text-3xl mb-4 font-bold">Lego Sets Collection</h1>
+            <p class="py-6 -mb-10">Browse the entire collection. Click the theme to filter by themes such as: <a href="/lego/sets?theme=Technic" class="btn btn-primary btn-xs">Technic</a> <a href="/lego/sets?theme=Competition" class="btn btn-primary btn-xs">Competitive</a> </p>
+
+        </div>
+
+
+        <!-- Table to display Lego sets data -->
+        <table class="table-auto w-full">
+            <tbody>
+                <!-- Iterate over the Lego sets data -->
+                <% sets.forEach(set => { %>
+                    <tr>
+                        <td>
+                            <div class="avatar">
+                                <div class="w-32 h-32 rounded-lg bg-transparent bg-no-repeat bg-cover" style="background-image: url('<%= set.url %>');"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <%= set.name %> | <a href="/lego/sets?theme=<%= set.themeId %>" class="btn mt-2 btn-xs"><%= set.themeName %></a>
+                        </td>
+                        <td><span class="font-bold">Year:</span> <%= set.year %> - <span class="font-bold">Parts:</span> <%= set.part %></td>
+                        <td>
+                            <a href="/lego/sets/<%= set.id %>" class="btn btn-xs">details</a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

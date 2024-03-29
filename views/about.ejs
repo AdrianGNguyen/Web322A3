@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Lego Collection</title>
+    <link href="css/output.css" rel="stylesheet">
+</head>
+
+<body>
+    <%- include('partials/navbar', { page: '/' }) %>
+
+    <div class="container mx-auto">
+        <!-- Hero section -->
+        <div class="hero bg-primary-500 text-white p-6 rounded-lg mb-6 text-center">
+            <h2 class="text-3xl mb-4 font-bold">About</h2>
+            <p class="text-lg">All about me...</p>
+        </div>
+
+        <!-- Grid system with 2 columns -->
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Left column: Image -->
+            <div class="card bg-white p-4 rounded-lg shadow-md">
+                <img src="https://fox8.com/wp-content/uploads/sites/12/2022/09/Meg-therapy-dog-1.jpg?w=569" alt="Your Image" class="w-full h-auto mb-4">
+            </div>
+
+            <!-- Right column: Short blurb -->
+            <div class="card bg-white p-4 rounded-lg shadow-md">
+                <h3 class="text-xl font-bold mb-2">About Me</h3>
+                <p class="text-gray-600 mb-4">Hi there! I'm a passionate Lego enthusiast and collector. I love building intricate models and exploring the endless possibilities that Lego offers. Apart from Lego, I enjoy hiking, reading, and playing musical instruments. Currently, I'm pursuing a degree in Computer Science and learning new programming languages in my spare time.</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

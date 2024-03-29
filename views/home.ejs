@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lego Collection</title>
+    <link rel="stylesheet" href="/css/output.css" />
+</head>
+<body>
+    <%- include('partials/navbar', { page: '/' }) %>
+    <div class="container mx-auto">
+        <!-- Hero section -->
+        
+        <div class="hero bg-primary-500 text-white p-6 rounded-lg mb-6 text-center">
+            <h2 class="text-3xl mb-32 font-bold text-black">Explore the Lego Collection</h2> <!-- Increased mb (margin-bottom) -->
+            <a href="/lego/sets" class="btn btn-primary">Explore Sets</a>
+        </div>
+        
+        <!-- Grid system with cards -->
+<div class="grid grid-cols-3 gap-4">
+    <!-- Card 1 -->
+    <div class="card bg-white p-4 rounded-lg shadow-md">
+        <img src="https://media.istockphoto.com/id/468022893/photo/lego-technic-earth-mover.jpg?s=612x612&w=0&k=20&c=RbFXIYtgbkIBZMU-TTTsaBSjJ79J3P7e_nlVkIcWogg=" alt="Lego Set 1" class="w-64 h-64 object-cover mb-4">
+        <h3 class="text-xl font-bold mb-2">Technic</h3>
+        <p class="text-gray-600 mb-4">Kids 6+ can learn as they play and explore their passion for engineering with detailed LEGO® Technic™ designs.</p>
+        <a href="/lego/sets/057-1" class="btn btn-primary">View Set</a>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="card bg-white p-4 rounded-lg shadow-md">
+        <img src="https://media.istockphoto.com/id/471595735/photo/lego-technic-race-car.jpg?s=612x612&w=0&k=20&c=984FlngVh9QaUji5IaNcJ6T9UTH_YcznHNu8SEI8ZzY=" alt="Lego Set 2" class="w-64 h-64 object-cover mb-4">
+        <h3 class="text-xl font-bold mb-2">Competitive</h3>
+        <p class="text-gray-600 mb-4">A comprehensive dive into the top Lego competitors such as Mega Brands, K'Nex, LeapFrog, and more.</p>
+        <a href="/lego/sets/055-2" class="btn btn-primary">View Set</a>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="card bg-white p-4 rounded-lg shadow-md">
+        <img src="https://m.media-amazon.com/images/I/61537G-DGbL._AC_UF894,1000_QL80_.jpg" alt="Lego Set 3" class="w-64 h-64 object-cover mb-4">
+        <h3 class="text-xl font-bold mb-2">Supplemental</h3>
+        <p class="text-gray-600 mb-4">Get busy building whatever you imagine with this colorful set of LEGO® bricks in different shapes and sizes!</p>
+        <a href="/lego/sets/058-1" class="btn btn-primary">View Set</a>
+    </div>
+</div>
+
+    </div>
+</body>
+
+</html>
