@@ -8,6 +8,8 @@
 * 
 *  Name: Gia Huy Nguyen Student ID: 134821222 Date: 2/17/2024
 *
+*  URL: https://good-teal-hermit-crab-ring.cyclic.app/
+*
 ********************************************************************************/
 
 const express = require("express");
@@ -29,8 +31,8 @@ legoData.Initialize()
   });
 
 // Middleware to serve static files
-app.use(express.static(path.join(__dirname, "views")));
-app.use("/src", express.static(path.join(__dirname, "src")));
+//app.use(express.static(path.join(__dirname, "views")));
+app.use(express.static(path.join(__dirname, "src")));
 
 // Routes
 app.get("/", (req, res) => {
