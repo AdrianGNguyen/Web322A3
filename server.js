@@ -81,6 +81,63 @@ app.get("/lego/sets/:setNum", async (req, res) => {
   }
 });
 
+
+// Middleware for parsing form data
+app.use(express.urlencoded({ extended: true }));
+
+// Routes for adding sets
+app.get("/lego/addSet", async (req, res) => {
+  try {
+    const themes = await legoData.getAllThemes();
+    res.render("addSet", { themes: themes });
+  } catch (error) {
+    res.status(500).render("500", { message: `I'm sorry, but we have encountered the following error: ${error}` });
+  }
+});
+
+app.post("/lego/addSet", async (req, res) => {
+  try {
+    const setData = req.body;
+    await legoData.addSet(setData);
+    res.redirect("/lego/sets");
+  } catch (error) {
+    res.status(500).render("500", { message: `I'm sorry, but we have encountered the following error: ${error}` });
+  }
+});
+// Route for rendering the editSet view
+app.get("/lego/editSet/:num", async (req, res) => {
+  try {
+    const set = await legoData.getSetByNum(req.params.num);
+    const themes = await legoData.getAllThemes();
+    res.render("editSet", { themes: themes, set: set });
+  } catch (error) {
+    res.status(404).render("404", { message: error });
+  }
+});
+
+// Route for processing the form submission for editing a set
+app.post("/lego/editSet", async (req, res) => {
+  try {
+    const setNum = req.body.set_num;
+    const setData = req.body;
+    await legoData.editSet(setNum, setData);
+    res.redirect("/lego/sets");
+  } catch (error) {
+    res.status(500).render("500", { message: `I'm sorry, but we have encountered the following error: ${error}` });
+  }
+});
+
+
+app.get("/lego/deleteSet/:num", async (req, res) => {
+  try {
+    const setNum = req.params.num;
+    await legoData.deleteSet(setNum);
+    res.redirect("/lego/sets");
+  } catch (error) {
+    res.status(500).render("500", { message: `I'm sorry, but we have encountered the following error: ${error}` });
+  }
+});
+
 // Route for handling 404 errors
 app.use((req, res) => {
   res.status(404).render("404", { message: "I'm sorry, we're unable to find what you're looking for" });

@@ -12,80 +12,163 @@
 
 const setData = require("../data/setData");
 const themeData = require("../data/themeData");
+require('dotenv').config();
+const Sequelize = require('sequelize');
 
-let sets = [];
+const sequelize = new Sequelize(
+  process.env.DB_DATABASE, 
+  process.env.DB_USER, 
+  process.env.DB_PASSWORD, {
+  host: process.env.DB_HOST,
+  dialect: process.env.DB_DIALECT,
+  port: process.env.DB_PORT,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false  // Note: setting to false can create security vulnerabilities in a production environment
+    }
+  }
+});
+
+const Theme = sequelize.define('Theme', {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  name: Sequelize.STRING
+}, { timestamps: false });
+
+const Set = sequelize.define('Set', {
+  id: {
+    type: Sequelize.STRING,
+    primaryKey: true
+  },
+  name: Sequelize.STRING,
+  year: Sequelize.INTEGER,
+  numParts: Sequelize.INTEGER,
+  themeId: {
+    type: Sequelize.INTEGER,
+    references: {
+      model: 'Themes',
+      key: 'id'
+    }
+  },
+  url: Sequelize.STRING
+}, { timestamps: false });
+
+Set.belongsTo(Theme, {foreignKey: 'themeId'});
+Theme.hasMany(Set, {foreignKey: 'themeId'});
 
 function Initialize() {
-  return new Promise((resolve, reject) => {
-    sets = [];
+  return sequelize.sync().then(() => {
+    console.log("Database and tables have been synced.");
 
-    setData.forEach(set => {
-      const themeMatch = themeData.find(theme => theme.id === set.themeId);
-      if (themeMatch) {
-        const newSet = {
-          themeId: set.themeId,
-          partNum: set.partNum,
-          year: set.year,
-          id: set.id,
-          name: set.name,
-          url: set.url,
-          themeName: themeMatch.name
-        };
-        sets.push(newSet);
+    return Theme.count().then(themesCount => {
+      if (themesCount === 0) {
+        return Theme.bulkCreate(themeData).then(() => {
+          console.log("Themes initialized in database.");
+        });
       }
-    });
+    }).then(() => {
+      return Set.count().then(setsCount => {
+        if (setsCount === 0) {
+          const validSetData = setData.map(set => {
+            const yearInt = parseInt(set.year, 10);
+            if (isNaN(yearInt)) {
+              return null;
+            }
+            return { ...set, year: yearInt };
+          }).filter(set => set !== null && themeData.some(theme => theme.id === set.themeId));
 
-    if (sets.length > 0) {
-      resolve("Resolved");
-    } else {
-      reject("Initialization failed");
-    }
+          return Set.bulkCreate(validSetData).then(() => {
+            console.log("Sets initialized in database.");
+          });
+        }
+      });
+    });
+  }).catch(error => {
+    console.error("An error occurred while syncing the database:", error);
+    throw error;
   });
 }
 
 function getAllSets() {
-  return new Promise((resolve, reject) => {
-  
-    if (sets.length > 0) {
-      resolve(sets);
-    } else {
-      reject("No sets available");
-    }
+  return Set.findAll({
+    include: [{ model: Theme }]
+  }).then(sets => {
+    if (!sets.length) throw new Error("No sets available");
+    return sets;
+  }).catch(error => {
+    throw error;
   });
 }
 
 function getSetByNum(setNum) {
-  return new Promise((resolve, reject) => {
-    const foundSet = sets.find(set => set.id === setNum);
-    if (foundSet) {
-      resolve(foundSet);
-    } else {
-      reject("Unable to find id");
-    }
+  return Set.findOne({
+    where: { id: setNum },
+    include: [{ model: Theme }]
+  }).then(set => {
+    if (!set) throw new Error("Unable to find requested set");
+    return set;
+  }).catch(error => {
+    throw error;
   });
 }
 
 function getSetsByTheme(theme) {
-  return new Promise((resolve, reject) => {
-    const searchTheme = theme.toLowerCase();
-    const foundSets = sets.filter(set => set.themeName.toLowerCase().includes(searchTheme));
-
-    if (foundSets) {
-      resolve(foundSets);
-    } else {
-      reject("Unable to find theme");
-    }
+  return Set.findAll({
+    include: [{
+      model: Theme,
+      where: {
+        name: {
+          [Sequelize.Op.iLike]: `%${theme}%`
+        }
+      }
+    }]
+  }).then(sets => {
+    if (!sets.length) throw new Error("Unable to find requested sets");
+    return sets;
+  }).catch(error => {
+    throw error;
   });
 }
 
+function getAllThemes() {
+  return Theme.findAll().then(themes => {
+    if (!themes.length) throw new Error("No themes available");
+    return themes;
+  }).catch(error => {
+    throw error;
+  });
+}
+function editSet(setNum, setData) {
+  return Set.update(setData, {
+    where: {
+      id: setNum
+    }
+  }).then(() => {
+    console.log("Set updated successfully");
+  }).catch(error => {
+    console.error("Error updating set:", error);
+    throw error;
+  });
+}
+function deleteSet(setNum) {
+  return Set.destroy({ where: { id: setNum } })
+    .then(() => {
+      console.log(`Set ${setNum} deleted successfully.`);
+    })
+    .catch(error => {
+      throw error;
+    });
+}
 module.exports = {
   Initialize,
   getAllSets,
   getSetByNum,
-  getSetsByTheme
+  getSetsByTheme,
+  getAllThemes,
+  editSet,
+  deleteSet
 };
-
-//Initialize();
-//getAllSets();
-
-  
